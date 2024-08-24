@@ -1,0 +1,91 @@
+ion-menu::part(backdrop) {
+    background-color: rgba(29, 29, 29, 0.5);
+}
+
+ion-menu::part(container) {
+    border-radius: 0 2px 2px 0;
+
+    box-shadow: 4px 0px 16px rgba(29, 29, 29, 0.5);
+}
+
+ion-menu {
+    --background: #2c3e50;
+    color: #333333;
+  }
+  
+  ion-menu ion-header {
+    --background: #34495e;
+  }
+  
+  ion-menu ion-title {
+    color: #333333;
+  }
+  
+  ion-menu ion-item {
+    --color: #333333;
+  }
+  
+  ion-menu ion-item:hover {
+    --background: #2980b9;
+  }
+  
+  ion-button {
+    --color: #333333;
+  }
+  
+  ion-icon[name="menu"] {
+    font-size: 24px;
+  }
+  
+
+.board-header{
+    display: flex;
+    flex-direction: row;
+    margin: 20px 20px -20px 20px;
+    max-width: 500px;
+    width: calc(100vw - 40px);
+    height: 44px;
+}
+.board-header div:nth-child(1){
+  flex: 1;
+  line-height: 44px;
+}
+.board-header div:nth-child(2){
+    flex: 1;
+    text-align: end;
+}
+.board-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.link-style {
+  --background: transparent; /* Remove background */
+  --border: none; /* Remove border */
+  --box-shadow: none; /* Remove box shadow */
+  --color: #3880ff; /* Set link color */
+  --padding-start: 0; /* Remove padding on the start */
+  --padding-end: 0; /* Remove padding on the end */
+  --padding-top: 0; /* Remove padding on the top */
+  --padding-bottom: 0; /* Remove padding on the bottom */
+  text-align: left; /* Align text to the left */
+}
+
+.link-style:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+.link-style:focus {
+  outline: none; /* Remove focus outline */
+}
+
+.timer-container {
+  max-width: 500px;
+  width: calc(100vw - 40px);
+  text-align: center;
+  margin: -10px 0;
+  ion-label {
+    font-size: 18px;
+  }
+}
+

@@ -1,0 +1,11 @@
+<div class="sudoku-board"> 
+  <table>
+    <tbody>
+      <tr *ngFor="let row of board; let rowIndex = index">
+        <td *ngFor="let cell of row; let colIndex = index">
+          <app-sudoku-board-cell [num]="cell" [rowIndex]="rowIndex" [colIndex]="colIndex" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

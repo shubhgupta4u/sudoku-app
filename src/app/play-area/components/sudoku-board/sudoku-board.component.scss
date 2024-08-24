@@ -1,0 +1,33 @@
+.sudoku-board {    
+    margin: 20px;
+    max-width: 500px;
+    width: calc(100vw - 40px);
+    height: calc(100vw - 40px);
+    max-height: 500px;
+}
+
+.sudoku-board table {
+    border-collapse: collapse;
+    width: 100%;
+    height: 100%;
+}
+
+.sudoku-board td {
+    padding: 0;
+}
+
+.sudoku-board tr:nth-child(1) td {
+    border-top: 2px solid #000;
+}
+
+.sudoku-board td:nth-child(1) {
+    border-left: 2px solid #000;
+}
+
+.sudoku-board tr:nth-child(3n) td {
+    border-bottom: 2px solid #000;
+}
+
+.sudoku-board td:nth-child(3n) {
+    border-right: 2px solid #000;
+}

@@ -7,8 +7,12 @@ const routes: Routes = [
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
+    path: 'play-zone',
+    loadChildren: () => import('./play-area/play-area.module').then( m => m.PlayAreaModule)
+  },
+  {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'play-zone',
     pathMatch: 'full'
   },
 ];
