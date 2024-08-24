@@ -1,0 +1,7 @@
+{
+  "name": "sudoku-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
