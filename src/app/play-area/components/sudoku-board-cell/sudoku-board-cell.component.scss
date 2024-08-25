@@ -1,33 +1,35 @@
+@import '@ionic/angular/css/core.css';
+
 div.number {
     width: 100%;
     height: 100%;
     font-size: 24px;
     display: flex;
-    border: 1px solid #000;
+    border: 1px solid var(--ion-color-dark-shade);
     div{
         margin: auto;
     }
     cursor: pointer;
 }
 div.readonly{
-    background-color: rgb(237, 234, 234);
+    background-color:rgba(var(--ion-color-medium-rgb, 0, 0, 0), 0.5);
     cursor: default;
 }
 div.editable{
-    background-color: white;
+    background-color: var(--ion-background-color);
 }
 div.set-number{
     font-weight: bolder;
 }
 div.picked{
-    background-color: rgb(192, 241, 166);
+    background-color: var(--ion-color-success);
 }
 div.selected{
-    background-color: #3881ffbe;
+    background-color: var(--ion-color-primary);
 }
 div.isInvalid{
-    background-color: #ff4538be;
+    background-color: var(--ion-color-warning-shade);
 }
 div.is-invalid-selected{
-    background-color: #ff3838;
+    background-color:var(--ion-color-danger-tint);
 }

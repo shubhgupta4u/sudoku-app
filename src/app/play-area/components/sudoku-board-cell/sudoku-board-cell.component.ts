@@ -118,6 +118,7 @@ export class SudokuBoardCellComponent implements OnInit, OnDestroy {
   }
 
   onNumberClick() {
+    this.playClickSound();
     if (this.readonly === undefined || this.readonly === false) {
       if (this.insidePicker() && this.num !== undefined) {
         const lastSelectedEmptyCell = this.gameEventNotifierService.getLastSelectedEmptyCell();
@@ -144,7 +145,12 @@ export class SudokuBoardCellComponent implements OnInit, OnDestroy {
       }
     }
   }
-
+  playClickSound() {
+    const audio = document.getElementById('click-sound') as HTMLAudioElement;
+    if (audio) {
+      audio.play();
+    }
+  }
   insideBoard(): boolean {
     return this.rowIndex !== undefined;
   }

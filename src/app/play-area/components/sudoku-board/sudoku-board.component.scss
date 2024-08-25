@@ -1,3 +1,5 @@
+@import '@ionic/angular/css/core.css';
+
 .sudoku-board {    
     margin: 20px;
     max-width: 500px;
@@ -17,17 +19,17 @@
 }
 
 .sudoku-board tr:nth-child(1) td {
-    border-top: 2px solid #000;
+    border-top: 2px solid var(--ion-color-dark-shade);
 }
 
 .sudoku-board td:nth-child(1) {
-    border-left: 2px solid #000;
+    border-left: 2px solid var(--ion-color-dark-shade);
 }
 
 .sudoku-board tr:nth-child(3n) td {
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid var(--ion-color-dark-shade);
 }
 
 .sudoku-board td:nth-child(3n) {
-    border-right: 2px solid #000;
+    border-right: 2px solid var(--ion-color-dark-shade);
 }

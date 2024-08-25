@@ -1,12 +1,12 @@
+@import '@ionic/angular/css/core.css';
+
 .rules-container {
     font-family: Arial, sans-serif;
     line-height: 1.6;
     margin: 20px;
-    padding: 20px;
-    background-color: #f4f4f4;
 
     h5 {
-        color: #333;
+        color: var(--ion-text-color);
         margin: 0;
     }
     ul {
@@ -18,5 +18,7 @@
     }
     .rule-section {
         margin-bottom: 20px;
+        padding: 20px;
+        background-color: var(--ion-color-light-tint);
     }
 }

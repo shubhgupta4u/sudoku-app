@@ -21,6 +21,9 @@ export class SudokuBoardComponent implements OnInit, OnDestroy {
   constructor(private sudokuBoardGeneratorService: SudokuBoardGeneratorService,
     private gameEventNotifierService: GameEventNotifierService
   ) {
+    
+  }
+  registerEventSubscription(){
     if (this.readonly === undefined || this.readonly === false) {
       this.gameEventSubscription = this.gameEventNotifierService.register().subscribe((event: GameEvent) => {
         if (event) {
@@ -46,6 +49,7 @@ export class SudokuBoardComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
+    this.registerEventSubscription();
     if (this.readonly !== undefined && this.readonly === true) {
       this.board = this.sudokuBoardGeneratorService.getCurrentBoard();
     }

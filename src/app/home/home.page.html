@@ -1,19 +1,39 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Sudoku
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page" id="main-content">
+  <ion-content>
+    <div class="home-container">
+      <div>
+        <h2>Sudoku Quest- Puzzle Game</h2>
+        <div class="img-container">
+          <ion-img  src="assets/logo.png"  alt="Sudoku Quest - Puzzle Game"></ion-img>
+        </div>
+        <h4>Embark on a Puzzle Adventure, One Square at a Time</h4>
+      </div>      
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+      <div>
+        <!-- <ion-router-link href="#/page-two">
+          <ion-button>Go to Page 2</ion-button>
+        </ion-router-link> -->
+        <ion-picker>
+          <ion-picker-column [value]="mode" (ionChange)="onGameModeChange($event)">
+            <div slot="prefix">Game Mode:</div>
+            <ion-picker-column-option [value]="55">Easy</ion-picker-column-option>
+            <ion-picker-column-option [value]="45">Medium</ion-picker-column-option>
+            <ion-picker-column-option [value]="35">Hard</ion-picker-column-option>
+            <ion-picker-column-option [value]="25">Master</ion-picker-column-option>
+          </ion-picker-column>
+        </ion-picker>
 
-  <div id="container">
-    
-  </div>
-</ion-content>
+        <ion-button size="large" class="btn" color="danger" (click)="startGame()">
+          <ion-icon slot="start" name="play"></ion-icon>
+          Start Game
+        </ion-button>
+
+        <ion-button size="large" class="btn" color="medium" *ngIf="isMobilePlatform()" (click)="exit()">
+          <ion-icon slot="start" name="exit"></ion-icon>
+          Exit Game
+        </ion-button>   
+
+      </div>
+    </div>
+  </ion-content>
+</div>

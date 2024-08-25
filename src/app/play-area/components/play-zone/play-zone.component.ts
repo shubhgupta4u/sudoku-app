@@ -6,6 +6,7 @@ import { EventName, GameEvent, NewGameEventData } from '../../models/game-event'
 import { Subscription } from 'rxjs';
 import { faEraser, faCircleInfo, faWandSparkles} from '@fortawesome/free-solid-svg-icons';
 import { SudokuBoardComponent } from '../sudoku-board/sudoku-board.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-play-zone',
@@ -14,9 +15,10 @@ import { SudokuBoardComponent } from '../sudoku-board/sudoku-board.component';
 })
 export class PlayZoneComponent implements OnInit, OnDestroy {
   isActionSheetOpen = false;
+  routerSubscription: Subscription|undefined;
   gameEventSubscription: Subscription|undefined;
-  gameComplexity:Complexity|undefined;
-  gameComplexityName:string|undefined;
+  gameComplexity:Complexity = Complexity.Medium;
+  gameComplexityName:string = Complexity[Complexity.Medium];
   time: string = '30:00';
   timer: any;
   seconds: number = 30*60;
@@ -65,35 +67,51 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
 
   constructor(private platform: Platform,
     private gameEventNotifierService: GameEventNotifierService,
-    private alertController: AlertController) { 
-      this.startTimer();
-      this.gameEventSubscription = this.gameEventNotifierService.register().subscribe((event: GameEvent) => {
-        if(event){
-          switch(event.name){
-            case EventName.NewGame:
-              if(event.data && event.data instanceof NewGameEventData){
-                this.gameComplexity = event.data.complexity;
-                this.gameComplexityName = Complexity[event.data.complexity];
-                this.startTimer();
-                this.gameEventNotifierService.clearLastPickerNumber();
-                this.gameEventNotifierService.clearLastSelectedEmptyCell();
-              }
-              break;
-            case EventName.GameOver:
-              this.markGameOver();
-              this.gameEventNotifierService.clearLastPickerNumber();
-              this.gameEventNotifierService.clearLastSelectedEmptyCell();
-              break;
-          }
-        }
+    private alertController: AlertController,
+    private route: ActivatedRoute) { 
+      this.routerSubscription = this.route.params.subscribe(params => {
+        if(+params['mode'] && Complexity[+params['mode']]){
+          this.gameComplexity = +params['mode']; 
+          this.gameComplexityName=Complexity[this.gameComplexity]; 
+        }              
       });
   }
 
+  registerEventSubscription(){
+    this.startTimer();
+    this.gameEventSubscription = this.gameEventNotifierService.register().subscribe((event: GameEvent) => {
+      if(event){
+        switch(event.name){
+          case EventName.NewGame:
+            if(event.data && event.data instanceof NewGameEventData){
+              this.gameComplexity = event.data.complexity;
+              this.gameComplexityName = Complexity[event.data.complexity];
+              this.startTimer();
+              this.gameEventNotifierService.clearLastPickerNumber();
+              this.gameEventNotifierService.clearLastSelectedEmptyCell();
+            }
+            break;
+          case EventName.GameOver:
+            this.markGameOver();
+            this.gameEventNotifierService.clearLastPickerNumber();
+            this.gameEventNotifierService.clearLastSelectedEmptyCell();
+            break;
+        }
+      }
+    });
+    setTimeout(()=>{
+      this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.NewGame,new NewGameEventData(this.gameComplexity)));
+    },200);
+  }
+
   ngOnInit() { 
-    this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.NewGame,new NewGameEventData(Complexity.Hard)));
+    this.registerEventSubscription();   
   }
 
   ngOnDestroy() { 
+    if(this.routerSubscription){
+      this.routerSubscription.unsubscribe();
+    }
 	  if (this.gameEventSubscription) {
       this.gameEventSubscription.unsubscribe();
     }
