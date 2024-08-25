@@ -14,7 +14,7 @@
         <ion-icon slot="start" name="refresh-circle"></ion-icon>
         <ion-label>Restart</ion-label>
       </ion-item>
-      <ion-item button (click)="menuItemClickHandler('Exit')">
+      <ion-item button *ngIf="isMobilePlatform()" (click)="menuItemClickHandler('Exit')">
         <ion-icon slot="start" name="exit"></ion-icon>
         <ion-label>Exit</ion-label>
       </ion-item>
@@ -43,13 +43,30 @@
 
     <div class="board-container">
       <div class="board-header">
-        <div><ion-label>Game Level: {{gameComplexity}}</ion-label></div>
-        <div><ion-button id="open-rules-modal" class="link-style">
-          Rules
-        </ion-button></div>
+        <div><ion-label>Game Level: {{gameComplexityName}}</ion-label></div>
+        <div>
+          <ion-button id="open-rules-modal" class="link-style">
+            <fa-icon [icon]="faCircleInfo"></fa-icon>&nbsp;Rules
+          </ion-button>
+        </div>
       </div>
-      <app-sudoku-board></app-sudoku-board>
-      <div class="timer-container"><ion-label>Timer: {{time}}</ion-label></div>
+
+      <app-sudoku-board [readonly]=false></app-sudoku-board>
+
+      <div class="timer-container">
+        <div>
+          <ion-button class="link-style" id="show-solution-modal">
+            <fa-icon [icon]="faWandSparkles"></fa-icon>&nbsp;Solution
+          </ion-button>          
+        </div>
+        <ion-label>Timer: {{time}}</ion-label>
+        <div>
+          <ion-button class="link-style" (click)="clearSelection()">
+            <fa-icon [icon]="faEraser"></fa-icon>&nbsp;{{anyCellSelected()?"Clear":"Clear All"}}
+          </ion-button>
+        </div>
+      </div>
+
       <app-sudoku-number-picker></app-sudoku-number-picker>
     </div>
     <ion-modal trigger="open-rules-modal">
@@ -63,7 +80,25 @@
           </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-          <app-playing-rules/>
+          <app-playing-rules />
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <ion-modal trigger="show-solution-modal">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-back-button default-href="#" (click)="cancel()"></ion-back-button>
+            </ion-buttons>
+            <ion-title>Sudoku Game Solution</ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <div class="board-container">
+          <app-sudoku-board [readonly]=true></app-sudoku-board>
+        </div>
         </ion-content>
       </ng-template>
     </ion-modal>

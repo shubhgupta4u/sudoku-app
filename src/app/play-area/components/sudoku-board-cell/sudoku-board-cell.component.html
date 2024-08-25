@@ -2,7 +2,10 @@
   [ngClass]="{'readonly': num != undefined && num > 0 && rowIndex !=undefined
             , 'editable' : num === 0 && rowIndex !=undefined
             ,'picked':numberPicked
-            ,'set-number': pickednumber != undefined && pickednumber > 0 && rowIndex !=undefined }"
+            ,'set-number': pickednumber != undefined && pickednumber > 0 && rowIndex !=undefined 
+            ,'selected':isSelected && !isInvalid
+            ,'isInvalid':isInvalid && !isSelected
+            ,'is-invalid-selected':isInvalid && isSelected}"
   (click)="onNumberClick()">
   <div>
     {{num != undefined && num > 0?num:(pickednumber != undefined && pickednumber>0?pickednumber:"")}}

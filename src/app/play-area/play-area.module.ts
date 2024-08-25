@@ -7,13 +7,15 @@ import { PlayZoneComponent } from './components/play-zone/play-zone.component';
 import { SudokuBoardCellComponent } from './components/sudoku-board-cell/sudoku-board-cell.component';
 import { SudokuNumberPickerComponent } from './components/sudoku-number-picker/sudoku-number-picker.component';
 import { PlayingRulesComponent } from './components/playing-rules/playing-rules.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [SudokuBoardComponent, PlayZoneComponent, SudokuBoardCellComponent, SudokuNumberPickerComponent, PlayingRulesComponent],
   imports: [
     IonicModule,
     CommonModule,
-    PlayAreaRoutingModule
+    PlayAreaRoutingModule,
+    FontAwesomeModule
   ]
 })
 export class PlayAreaModule { }

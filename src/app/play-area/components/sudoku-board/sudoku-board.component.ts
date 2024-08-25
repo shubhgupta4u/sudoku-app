@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Complexity, SudokuBoardGeneratorService } from '../../services/sudoku-board-generator.service';
+import { Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Complexity, SudokuBoard, SudokuBoardGeneratorService } from '../../services/sudoku-board-generator.service';
 import { GameEventNotifierService } from '../../services/game-event-notifier.service';
-import { GameEvent,EventName } from '../../models/game-event';
-import { Observable, Subscription } from 'rxjs';
+import { GameEvent, EventName, NewGameEventData, SetNumberEventData } from '../../models/game-event';
+import { Subscription } from 'rxjs';
+import { SudokuBoardCellComponent } from '../sudoku-board-cell/sudoku-board-cell.component';
 
 @Component({
   selector: 'app-sudoku-board',
@@ -10,47 +11,90 @@ import { Observable, Subscription } from 'rxjs';
   styleUrls: ['./sudoku-board.component.scss'],
 })
 export class SudokuBoardComponent implements OnInit, OnDestroy {
-  board: number[][]|undefined;
-  gameEventSubscription: Subscription|undefined;
-  gameComplexity=Complexity.Hard;
+  board: number[][] | undefined;
+  gameEventSubscription: Subscription | undefined;
+  gameComplexity = Complexity.Hard;
 
-  sampleNumbers = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
-  ];  
+  @Input() readonly: boolean | undefined;
+  @ViewChildren(SudokuBoardCellComponent) cellComponents: QueryList<SudokuBoardCellComponent>|undefined;
+
   constructor(private sudokuBoardGeneratorService: SudokuBoardGeneratorService,
     private gameEventNotifierService: GameEventNotifierService
   ) {
-    this.gameEventSubscription = this.gameEventNotifierService.register().subscribe((event: GameEvent) => {
-      if(event){
-        switch(event.name){
-          case EventName.NewGame:
-            if(event.data){
-              this.gameComplexity = event.data
-            }
-            this.board = this.sudokuBoardGeneratorService.generateSudokuBoard(this.gameComplexity);
-            break;
-          case EventName.RestartGame:
-            this.board = this.sudokuBoardGeneratorService.generateSudokuBoard(this.gameComplexity);
-            break;
+    if (this.readonly === undefined || this.readonly === false) {
+      this.gameEventSubscription = this.gameEventNotifierService.register().subscribe((event: GameEvent) => {
+        if (event) {
+          switch (event.name) {
+            case EventName.NewGame:
+              if (event.data && event.data instanceof NewGameEventData) {
+                this.gameComplexity = event.data.complexity
+              }
+              this.board = this.sudokuBoardGeneratorService.generateSudokuBoard(this.gameComplexity);
+              break;
+            case EventName.SetNumber:
+              const board=this.getUpdatedBoard();
+              setTimeout(() => {          
+                const isInvalid=this.isBoardValid(board);      
+                if(!this.anyEmptyCell() && isInvalid){
+                  this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.GameOver));
+                }
+              }, 100);
+              
+          }
         }
-      }
-    });    
+      });
+    }
   }
   ngOnInit() {
-	  
+    if (this.readonly !== undefined && this.readonly === true) {
+      this.board = this.sudokuBoardGeneratorService.getCurrentBoard();
+    }
   }
-  ngOnDestroy() { 
-	  if (this.gameEventSubscription) {
+  ngOnDestroy() {
+    if (this.gameEventSubscription) {
       this.gameEventSubscription.unsubscribe();
     }
   }
-  
+
+  anyCellSelected():boolean{
+    if(this.cellComponents && this.cellComponents.length === 81 && this.cellComponents.filter(s=>s.isSelected)?.length >= 1)
+      return true;
+    else
+      return false
+  }
+
+  anyEmptyCell():boolean{
+    if(this.cellComponents && this.cellComponents.length === 81 && this.cellComponents.filter(s=>s.num === 0 && s.pickednumber === undefined)?.length >= 1)
+      return true;
+    else
+      return false
+  }
+
+  isBoardValid(board:SudokuBoard):boolean{
+    let isInvalid = false;
+    if(this.cellComponents){      
+      this.cellComponents.forEach((cell)=>{
+        cell.isInvalid = false;
+        if(cell.num ===0 && cell.pickednumber !== undefined && cell.rowIndex !==undefined && cell.colIndex !== undefined){
+          if(!this.sudokuBoardGeneratorService.isValid(board,cell.rowIndex,cell.colIndex,cell.pickednumber)){
+            isInvalid=true;
+            cell.isInvalid = true;
+          }
+        }        
+      });
+    }    
+    return !isInvalid;
+  }
+
+  private getUpdatedBoard(){
+    const board: SudokuBoard = Array.from({ length: 9 }, () => Array(9).fill(0));
+    if(this.cellComponents){
+      this.cellComponents.forEach((cell)=>{
+        if(cell.rowIndex !== undefined  && cell.colIndex !== undefined ){
+          board[cell.rowIndex][cell.colIndex]=(cell.pickednumber !== undefined && cell.pickednumber >0?cell.pickednumber:(cell.num && cell.num >0?cell.num:0)); 
+        }             
+      });
+    }
+    return board;
+  }
 }

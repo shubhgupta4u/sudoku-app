@@ -7,22 +7,11 @@ div.number {
     div{
         margin: auto;
     }
-}
-
-input {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    font-size: 18px;
-    border: 1px solid #000;
-    box-sizing: border-box;
-}
-
-input:focus {
-    outline: none;
+    cursor: pointer;
 }
 div.readonly{
     background-color: rgb(237, 234, 234);
+    cursor: default;
 }
 div.editable{
     background-color: white;
@@ -32,4 +21,13 @@ div.set-number{
 }
 div.picked{
     background-color: rgb(192, 241, 166);
+}
+div.selected{
+    background-color: #3881ffbe;
+}
+div.isInvalid{
+    background-color: #ff4538be;
+}
+div.is-invalid-selected{
+    background-color: #ff3838;
 }

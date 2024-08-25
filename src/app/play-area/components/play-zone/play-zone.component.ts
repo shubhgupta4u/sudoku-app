@@ -1,9 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Complexity } from '../../services/sudoku-board-generator.service';
 import { AlertController, IonMenu, IonModal, Platform } from '@ionic/angular';
 import { GameEventNotifierService } from '../../services/game-event-notifier.service';
-import { EventName, GameEvent } from '../../models/game-event';
+import { EventName, GameEvent, NewGameEventData } from '../../models/game-event';
 import { Subscription } from 'rxjs';
+import { faEraser, faCircleInfo, faWandSparkles} from '@fortawesome/free-solid-svg-icons';
+import { SudokuBoardComponent } from '../sudoku-board/sudoku-board.component';
 
 @Component({
   selector: 'app-play-zone',
@@ -13,13 +15,20 @@ import { Subscription } from 'rxjs';
 export class PlayZoneComponent implements OnInit, OnDestroy {
   isActionSheetOpen = false;
   gameEventSubscription: Subscription|undefined;
-  gameComplexity:string|undefined;
-  time: string = '00:00';
+  gameComplexity:Complexity|undefined;
+  gameComplexityName:string|undefined;
+  time: string = '30:00';
   timer: any;
-  seconds: number = 0;
+  seconds: number = 30*60;
 
-  @ViewChild(IonModal) modal: IonModal|undefined;
+  faEraser=faEraser;
+  faCircleInfo=faCircleInfo;
+  faWandSparkles=faWandSparkles;
+
+  @ViewChildren(IonModal) modals: QueryList<IonModal>|undefined;
+  @ViewChildren(SudokuBoardComponent) boards: QueryList<SudokuBoardComponent>|undefined;
   @ViewChild(IonMenu) menu: IonMenu|undefined;
+
   public actionSheetButtons = [
     {
       text: 'Easy',
@@ -62,21 +71,26 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
         if(event){
           switch(event.name){
             case EventName.NewGame:
-              if(event.data){
-                this.gameComplexity = Complexity[event.data];
+              if(event.data && event.data instanceof NewGameEventData){
+                this.gameComplexity = event.data.complexity;
+                this.gameComplexityName = Complexity[event.data.complexity];
                 this.startTimer();
+                this.gameEventNotifierService.clearLastPickerNumber();
+                this.gameEventNotifierService.clearLastSelectedEmptyCell();
               }
               break;
             case EventName.GameOver:
               this.markGameOver();
+              this.gameEventNotifierService.clearLastPickerNumber();
+              this.gameEventNotifierService.clearLastSelectedEmptyCell();
               break;
           }
         }
       });
-    }
+  }
 
   ngOnInit() { 
-    this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.NewGame,Complexity.Master));
+    this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.NewGame,new NewGameEventData(Complexity.Hard)));
   }
 
   ngOnDestroy() { 
@@ -93,15 +107,15 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
     this.isActionSheetOpen = false;
     if(event.detail.data != undefined && event.detail.data.action != undefined && event.detail.data.action != "cancel"){
       console.log(event.detail.data.action);
-      this.presentConfirmAlert(new GameEvent(EventName.NewGame, event.detail.data.action),"Current game progress will be lost. Are you sure you want to start a new game?");
+      this.presentConfirmAlert(new GameEvent(EventName.NewGame, new NewGameEventData(event.detail.data.action)),"Current game progress will be lost. Are you sure you want to start a new game?");
     }
   }
 
   menuItemClickHandler(menuName:string){
     if(menuName == "NewGame"){
       this.isActionSheetOpen = true;
-    }else if(menuName == "RestartGame"){
-      this.presentConfirmAlert(new GameEvent(EventName.RestartGame),"Current game progress will be lost. Are you sure you want to restart game?");
+    }else if(menuName == "RestartGame" && this.gameComplexity !== undefined){
+      this.presentConfirmAlert(new GameEvent(EventName.NewGame,new NewGameEventData(this.gameComplexity)),"Current game progress will be lost. Are you sure you want to restart game?");
     }else if(menuName == "Exit"){
       this.presentConfirmAlert(new GameEvent(EventName.Exit),"Are you sure you want to exit?");
     }
@@ -109,18 +123,35 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    if(this.modal){
-      this.modal.dismiss(null, 'cancel');
+    if(this.modals){
+      this.modals.forEach((modal)=>{
+        modal.dismiss(null, 'cancel');
+      })
+     
     }    
+  }
+
+  anyCellSelected():boolean{
+    if(this.boards && this.boards.length >=1 && this.boards.filter(s=> (s.readonly == undefined || s.readonly == false) && s.anyCellSelected())?.length >= 1)
+      return true;
+    else
+      return false
+  }
+
+  isMobilePlatform():boolean{
+    return this.platform.is('android') || this.platform.is('ios');
+  }
+  clearSelection(){
+    if(this.anyCellSelected()){
+      this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.ClearSelection));
+    }else{
+      this.presentConfirmAlert(new GameEvent(EventName.ClearAll),"Current game progress will be lost. Are you sure you want to reset the sudoku board?");
+    }   
   }
 
   private exit(){
     this.isActionSheetOpen = false;
-    if(this.platform.is('android') || this.platform.is('ios')){
-      (navigator as any)['app'].exitApp();
-    }else{
-      window.self.close(); 
-    }    
+    (navigator as any)['app'].exitApp();   
   }
 
   private async presentConfirmAlert(gameEvent:GameEvent, message="Are you sure you want to proceed?") {
@@ -159,7 +190,7 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
   }
   private confirmAlertHandler(gameEvent:GameEvent){
     if(gameEvent){
-      if((gameEvent.name == EventName.NewGame || gameEvent.name == EventName.RestartGame)){
+      if(gameEvent.name == EventName.NewGame || gameEvent.name == EventName.ClearAll ){
         this.gameEventNotifierService.raiseEvent(gameEvent);
       }else{
         this.exit();
@@ -170,9 +201,9 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
     if (this.timer) {
       clearInterval(this.timer);
     }
-    this.seconds = 0;
+    this.seconds = 30*60;
     this.timer = setInterval(() => {
-      this.seconds++;
+      this.seconds--;
       this.updateTime();
     }, 1000);
   }
@@ -189,7 +220,7 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
     const seconds = this.seconds % 60;
 
     this.time = `${this.pad(minutes)}:${this.pad(seconds)}`;
-    if(this.time =="30:00"){
+    if(this.time =="00:00"){
       this.markTimeOver();
     }
   }
@@ -202,7 +233,6 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
 
   private markGameOver(){
     this.stopTimer();
-    this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.GameOver));
     this.presentGameOverAlert();
   }
 

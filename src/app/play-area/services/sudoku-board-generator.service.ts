@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 export type SudokuBoard = number[][];
 export enum Complexity {
-  Easy =60, 
-  Medium=50, 
-  Hard=40,
-  Master=30
+  Easy =55, 
+  Medium=45, 
+  Hard=35,
+  Master=25
 }
 
 @Injectable({
@@ -13,6 +13,7 @@ export enum Complexity {
 export class SudokuBoardGeneratorService {
 
   private result:SudokuBoard|undefined;
+  private board:SudokuBoard|undefined;
   constructor() { }
 
   // Generates a valid Sudoku board
@@ -27,13 +28,14 @@ export class SudokuBoardGeneratorService {
 
     // Remove some numbers to create a puzzle
     this.removeNumbers(board,  81 - clues); 
+    this.board = JSON.parse(JSON.stringify(board));
     return board;
   }
 
   // Check if a number can be placed in a given cell
-  private isValid(board: SudokuBoard, row: number, col: number, num: number): boolean {
+  isValid(board: SudokuBoard, row: number, col: number, num: number): boolean {
     for (let i = 0; i < 9; i++) {
-      if (board[row][i] === num || board[i][col] === num) {
+      if ((i !=col && board[row][i] === num) || (i !=row && board[i][col] === num)) {
         return false;
       }
     }
@@ -43,13 +45,21 @@ export class SudokuBoardGeneratorService {
 
     for (let i = startRow; i < startRow + 3; i++) {
       for (let j = startCol; j < startCol + 3; j++) {
-        if (board[i][j] === num) {
+        if (i !=row && j!=col && board[i][j] === num) {
           return false;
         }
       }
     }
 
     return true;
+  }
+
+  public getSolution():SudokuBoard|undefined{
+    return this.result;
+  }
+
+  public getCurrentBoard():SudokuBoard|undefined{
+    return this.board;
   }
 
   // Fill the board using backtracking
@@ -117,6 +127,7 @@ export class SudokuBoardGeneratorService {
     console.log('hasNonZeroCellRow', colIndex);
     return false;
   }
+
   // Display the board (for debugging purposes)
   private displayBoard(board: SudokuBoard): void {
     for (const row of board) {

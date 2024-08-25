@@ -41,14 +41,14 @@ ion-menu {
 .board-header{
     display: flex;
     flex-direction: row;
-    margin: 20px 20px -20px 20px;
+    margin: 20px 20px;
+    margin-bottom: -20px;
     max-width: 500px;
     width: calc(100vw - 40px);
-    height: 44px;
 }
 .board-header div:nth-child(1){
   flex: 1;
-  line-height: 44px;
+  line-height: 25px;
 }
 .board-header div:nth-child(2){
     flex: 1;
@@ -69,10 +69,14 @@ ion-menu {
   --padding-top: 0; /* Remove padding on the top */
   --padding-bottom: 0; /* Remove padding on the bottom */
   text-align: left; /* Align text to the left */
+  min-height: auto;
+  fa-icon{
+    font-size: 18px;
+  }
 }
 
 .link-style:hover {
-  text-decoration: underline; /* Add underline on hover */
+  font-weight: bolder;
 }
 
 .link-style:focus {
@@ -86,6 +90,9 @@ ion-menu {
   margin: -10px 0;
   ion-label {
     font-size: 18px;
+    margin: auto;
   }
+  display: flex;
+  justify-content: space-between;
 }
 
