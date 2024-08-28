@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { faEraser, faCircleInfo, faWandSparkles} from '@fortawesome/free-solid-svg-icons';
 import { SudokuBoardComponent } from '../sudoku-board/sudoku-board.component';
 import { ActivatedRoute } from '@angular/router';
+import {NativeAudio} from '@capacitor-community/native-audio'
 
 @Component({
   selector: 'app-play-zone',
@@ -95,6 +96,13 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
             this.markGameOver();
             this.gameEventNotifierService.clearLastPickerNumber();
             this.gameEventNotifierService.clearLastSelectedEmptyCell();
+            this.playGameWonSound();
+            break;
+          case EventName.TimeOver:
+            this.playGameOverSound();
+          break;
+          case EventName.cellClicked:
+            this.playClickSound();
             break;
         }
       }
@@ -105,9 +113,42 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() { 
-    this.registerEventSubscription();   
+    this.registerEventSubscription();  
+    setTimeout(()=>{
+      this.loadAudio();
+    },100) ;    
   }
 
+  loadAudio(){
+    let clickaudioFilePath="click.mp3";
+    let gameOveraudioFilePath="game_over.mp3";
+    let gameWinaudioFilePath="game_win.mp3";
+    if(this.platform.is('android')){
+      clickaudioFilePath="public/assets/sounds/click.mp3";
+      gameOveraudioFilePath="public/assets/sounds/game_over.mp3";
+      gameWinaudioFilePath="public/assets/sounds/game_win.mp3";
+    }
+    NativeAudio.preload({
+      assetId: "click",
+      assetPath: clickaudioFilePath,
+      audioChannelNum: 1,
+      isUrl: false
+    });
+    NativeAudio.preload(
+    {
+      assetId: "game-over",
+      assetPath: gameOveraudioFilePath,
+      audioChannelNum: 1,
+      isUrl: false
+    });
+    NativeAudio.preload(
+    {
+      assetId: "game-win",
+      assetPath: gameWinaudioFilePath,
+      audioChannelNum: 1,
+      isUrl: false
+    });
+  }
   ngOnDestroy() { 
     if(this.routerSubscription){
       this.routerSubscription.unsubscribe();
@@ -256,5 +297,23 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
 
   private pad(value: number): string {
     return value < 10 ? '0' + value : value.toString();
+  }
+
+  private playClickSound() {
+    NativeAudio.play({
+      assetId: 'click',
+    });
+  }
+  
+  private playGameWonSound() {
+    NativeAudio.play({
+      assetId: 'game-win',
+    });
+  }
+  
+  private playGameOverSound() {
+    NativeAudio.play({
+      assetId: 'game-over',
+    });
   }
 }

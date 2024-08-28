@@ -118,8 +118,8 @@ export class SudokuBoardCellComponent implements OnInit, OnDestroy {
   }
 
   onNumberClick() {
-    this.playClickSound();
     if (this.readonly === undefined || this.readonly === false) {
+      this.raiseCellClickEvent();
       if (this.insidePicker() && this.num !== undefined) {
         const lastSelectedEmptyCell = this.gameEventNotifierService.getLastSelectedEmptyCell();
         if (lastSelectedEmptyCell !== undefined) {
@@ -140,21 +140,19 @@ export class SudokuBoardCellComponent implements OnInit, OnDestroy {
           this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.SetNumber, new SetNumberEventData(pickednumber, this.rowIndex, this.colIndex)));
         } else if (this.pickednumber === 0 || this.pickednumber === undefined) {
           //empty cell is selected on board
+
           this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.EmptyCellSelected, new EmptyCellSelectedEventData(this.rowIndex, this.colIndex)));
         }
       }
     }
   }
-  playClickSound() {
-    const audio = document.getElementById('click-sound') as HTMLAudioElement;
-    if (audio) {
-      audio.play();
-    }
+  raiseCellClickEvent() {
+    this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.cellClicked));
   }
   insideBoard(): boolean {
     return this.rowIndex !== undefined;
   }
-  
+
   insidePicker(): boolean {
     return this.rowIndex === undefined;
   }

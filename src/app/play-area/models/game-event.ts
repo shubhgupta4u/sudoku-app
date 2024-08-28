@@ -13,7 +13,8 @@ export enum EventName {
     NumberSelected,
     EmptyCellSelected,
     ClearSelection,
-    ClearAll
+    ClearAll,
+    cellClicked
   }
 export class GameEvent{
     data:EventDataType;
