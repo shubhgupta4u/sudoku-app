@@ -2,7 +2,8 @@
 
 div.number {
     width: 100%;
-    height: 100%;
+    height: calc((100vw - 40px)/9);
+    max-height: calc(500px/9);
     font-size: 24px;
     display: flex;
     border: 1px solid var(--ion-color-dark-shade);

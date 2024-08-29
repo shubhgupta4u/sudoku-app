@@ -198,8 +198,9 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
   }
 
   isMobilePlatform():boolean{
-    return this.platform.is('android') || this.platform.is('ios');
+    return (this.platform.is('android') || this.platform.is('ios')) && !this.platform.is('mobileweb') &&  !this.platform.is('pwa');
   }
+
   clearSelection(){
     if(this.anyCellSelected()){
       this.gameEventNotifierService.raiseEvent(new GameEvent(EventName.ClearSelection));

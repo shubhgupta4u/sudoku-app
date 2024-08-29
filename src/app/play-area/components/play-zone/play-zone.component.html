@@ -23,7 +23,7 @@
   </ion-content>
 </ion-menu>
 <div class="ion-page" id="main-content">
-  <ion-header [translucent]="true">
+  <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
@@ -31,16 +31,7 @@
       <ion-title>Sudoku Quest - Puzzle Game</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button></ion-menu-button>
-        </ion-buttons>
-        <ion-title size="large">Sudoku Quest - A Math Puzzle Game</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
+  <ion-content>
     <div class="board-container">
       <div class="board-header">
         <div><ion-label>Game Level: {{gameComplexityName}}</ion-label></div>

@@ -9,12 +9,14 @@
 
 .sudoku-board table {
     border-collapse: collapse;
-    width: 100%;
-    height: 100%;
+    width: 100%;   
+    height: calc((100vw - 40px)/9);
+    max-height: calc(500px/9);
 }
 
 .sudoku-board td {
     padding: 0;
+    height: 100%;
 }
 .sudoku-board td,tr{   
     border: 2px solid var(--ion-color-dark-shade);
