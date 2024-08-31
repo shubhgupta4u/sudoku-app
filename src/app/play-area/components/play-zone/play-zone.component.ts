@@ -123,7 +123,7 @@ export class PlayZoneComponent implements OnInit, OnDestroy {
     let clickaudioFilePath="click.mp3";
     let gameOveraudioFilePath="game_over.mp3";
     let gameWinaudioFilePath="game_win.mp3";
-    if(this.platform.is('android')){
+    if(this.platform.is('android') && !this.platform.is('mobileweb') &&  !this.platform.is('pwa')){
       clickaudioFilePath="public/assets/sounds/click.mp3";
       gameOveraudioFilePath="public/assets/sounds/game_over.mp3";
       gameWinaudioFilePath="public/assets/sounds/game_win.mp3";
